@@ -1,0 +1,5 @@
+<?xml version="1.0"?>
+<launch>
+  <rosparam command="load" file="$(find amr_data_processor)/config/data_storage.yaml"/>
+  <node name="amr_data_storage_node" pkg="amr_data_processor" type="amr_data_storage_node.py" output="screen"/>
+</launch>

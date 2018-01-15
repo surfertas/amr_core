@@ -1,0 +1,7 @@
+data_dir: '/tmp/amr_data' # Directory to write image data
+capacity: 100            # Number of images to store
+
+# Topics to record and store.
+img_topic: '/webcam/image_raw/compressed'
+cmd_topic: '/mobile_base/commands/velocity/stamped'
+
