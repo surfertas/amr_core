@@ -15,10 +15,12 @@ find_package(catkin REQUIRED COMPONENTS
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
-find_package(OpenCV REQUIRED
-NO_MODULE
-PATHS /usr/local
-NO_DEFAULT_PATH)
+find_package(OpenCV)
+
+#find_package(OpenCV REQUIRED
+#NO_MODULE
+#PATHS /usr/local
+#NO_DEFAULT_PATH)
 
 
 ## Uncomment this if the package has a setup.py. This macro ensures
@@ -200,6 +202,6 @@ include_directories(
 # endif()
 
 ## Add folders to be run by python nosetests
-if (CATKIN_ENABLE_TESTING)
-    catkin_add_nosetests(test)
-endif()
+#if (CATKIN_ENABLE_TESTING)
+#    catkin_add_nosetests(test)
+#endif()
