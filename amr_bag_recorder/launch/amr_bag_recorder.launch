@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<launch>
+  <arg name="bag_dir" default="$(find amr_bag_recorder)/bags" />
+  <arg name="topic_1" value="/webcam/image_raw/compressed" />
+  <arg name="topic_2" value="/webcam/image_raw/compressed" />
+
+  <node pkg="rosbag" name="record" type="record" args="--duration=2m -O $(arg bag_dir) $(arg topic_1) $(arg topic_2)" />
+</launch>
