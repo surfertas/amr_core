@@ -1,13 +1,14 @@
 #!/usr/bin/env python
 # @author Tasuk Miura
 
-# Revised from: 
+# Revised from:
 # https://github.com/wroscoe/donkey/blob/master/donkeycar/parts/actuator.py
 # Copyright (C) 2017 Maeve Automation - All Rights Reserved
 
 import rospy
 import Adafruit_PCA9685
 from amr_controller.msg import Command2D
+
 
 class PCA9685_Controller:
 
@@ -37,15 +38,15 @@ class Controller:
     """
 
     def __init__(self, p):
-        """ Instantiate a servo controller and keep a local 
+        """ Instantiate a servo controller and keep a local
             copy of the params.
         """
         self.controller = PCA9685_Controller(p['channel'])
         self.params = p
 
     def update(self, cmd):
-        """ Map a command `cmd` \in [-1,1] onto [min_pulse,max_pulse] 
-            centered on `zero_pulse`. 
+        """ Map a command `cmd` \in [-1,1] onto [min_pulse,max_pulse]
+            centered on `zero_pulse`.
 
             arg: cmd The input control command.
         """
@@ -115,4 +116,3 @@ if __name__ == '__main__':
         Command2D,
         handler.callback)
     rospy.spin()
-
