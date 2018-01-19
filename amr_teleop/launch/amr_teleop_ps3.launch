@@ -1,0 +1,4 @@
+<?xml version="1.0"?>
+<launch>
+  <rosparam command="load" file="$(find amr_teleop)/config/joystick_params.yaml"/>
+</launch>

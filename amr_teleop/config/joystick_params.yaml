@@ -1,0 +1,5 @@
+joy_stick:
+  x_axis: 1 # mapping to x control (throttle)
+  y_axis: 3 # mapping to y control (steering)
+  x_gain: 1.0
+  y_gain: 1.0
