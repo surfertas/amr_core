@@ -43,6 +43,7 @@ class Controller:
         """
         self.controller = PCA9685_Controller(p['channel'])
         self.params = p
+        rospy.loginfo("{} controller initiated..".format(p['name']))
 
     def update(self, cmd):
         """ Map a command `cmd` \in [-1,1] onto [min_pulse,max_pulse]

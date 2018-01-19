@@ -1,5 +1,6 @@
 #  Channel and PWM settings for the throttle (x control axis) actuator.
 throttle_actuator:
+  name: 'throttle'
   verbose: false # Whether to print sent command to console.
   debug_only: false # If true, does not send command to actuator.
   channel:    0
@@ -11,6 +12,7 @@ throttle_actuator:
 
 # Channel and PWM settings for the steering (y control axis) actuator.
 steering_actuator:
+  name: 'steering'
   verbose: false # Whether to print sent command to console.
   debug_only: false # If true, does not send command to actuator.
   channel:     1
