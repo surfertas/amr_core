@@ -5,6 +5,9 @@
 # https://github.com/wroscoe/donkey/blob/master/donkeycar/parts/actuator.py
 # Copyright (C) 2017 Maeve Automation - All Rights Reserved
 
+# rostopic pub -r 10 /test/Command2D amr_controller/Command2D '{
+# lazy_publishing: false, x: 1.5, y: 0.5 }'
+
 import rospy
 import Adafruit_PCA9685
 from amr_controller.msg import Command2D
