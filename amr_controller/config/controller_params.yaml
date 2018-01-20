@@ -1,4 +1,6 @@
 #  Channel and PWM settings for the throttle (x control axis) actuator.
+cmd_topic: '/amr_command_2d'
+
 throttle_actuator:
   name: 'throttle'
   verbose: false # Whether to print sent command to console.

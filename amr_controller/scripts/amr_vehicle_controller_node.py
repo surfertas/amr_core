@@ -113,10 +113,11 @@ if __name__ == '__main__':
     rospy.init_node('amr_vehicle_controller')
     throttle_params = rospy.get_param('throttle_actuator')
     steering_params = rospy.get_param('steering_actuator')
+    cmd_topic = rospy.get_param('cmd_topic')
 
     handler = Handler(throttle_params, steering_params)
     rospy.Subscriber(
-        '/test/Command2D',
+        cmd_topic,
         Command2D,
         handler.callback)
     rospy.spin()
