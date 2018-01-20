@@ -11,7 +11,7 @@ import rospy
 import message_filters
 from sensor_msgs.msg import CompressedImage
 from geometry_msgs.msg import Twist, TwistStamped
-
+from amr_controller.msg import Command2D
 
 class DataWriter(object):
 
@@ -37,15 +37,15 @@ class DataWriter(object):
         # Create the data directory if it doesn't exist
         # New directory is created for each initialization to keep
         # data organized.
-        path = os.path.join(self._data_dir, str(rospy.get_rostime()))
-        if not os.path.isdir(path):
-            os.makedirs(path)
+        self._data_dir = os.path.join(self._data_dir, str(rospy.get_rostime()))
+        if not os.path.isdir(self._data_dir):
+            os.makedirs(self._data_dir)
 
     def _init_subscribers(self):
         """ Set up subscribers and sync. """
         # Initialize subscribers.
         img_sub = message_filters.Subscriber(self._img_topic, CompressedImage)
-        cmd_sub = message_filters.Subscriber(self._cmd_topic, TwistStamped)
+        cmd_sub = message_filters.Subscriber(self._cmd_topic, Command2D)
         subs = [img_sub, cmd_sub]
 
         # Sync subscribers
@@ -64,12 +64,13 @@ class DataWriter(object):
         """
         if len(self._img_array) < self._capacity:
             cv_img = cv2.imdecode(np.fromstring(img.data, np.uint8), 1)
-            path = self._data_dir + '/{}.png'.format(rospy.get_rostime())
+            path = os.path.join(self._data_dir, '{}.png'.format(rospy.get_rostime()))
             cv2.imwrite(path, cv_img)
 
             self._img_array.append(path)
             self._cmd_array.append(cmd)
 
+        #TODO: dump img_array _cmd_array to csv
 
 def main():
     rospy.init_node('amr_data_storage_node')
