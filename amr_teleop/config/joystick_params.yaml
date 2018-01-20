@@ -1,6 +1,6 @@
 joy_stick:
   subscribe_topic: '/joy'
-  publish_topic: '/test/Command2D'
+  publish_topic: '/amr_command_2d'
   x_axis: 3 # mapping to x control (throttle)
   y_axis: 0 # mapping to y control (steering)
   x_gain: 0.5
