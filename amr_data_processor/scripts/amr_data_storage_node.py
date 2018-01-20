@@ -35,8 +35,11 @@ class DataWriter(object):
     def _setup(self):
         """ Setup process related to DataWriter object. """
         # Create the data directory if it doesn't exist
-        if not os.path.isdir(self._data_dir):
-            os.makedirs(self._data_dir)
+        # New directory is created for each initialization to keep
+        # data organized.
+        path = os.path.join(self._data_dir, str(rospy.get_rostime()))
+        if not os.path.isdir(path):
+            os.makedirs(path)
 
     def _init_subscribers(self):
         """ Set up subscribers and sync. """
