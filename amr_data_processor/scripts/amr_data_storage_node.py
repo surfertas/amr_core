@@ -86,7 +86,8 @@ def main():
 
     if rospy.has_param('cmd_topic'):
         cmd_topic = rospy.get_param(
-            'cmd_topic'
+            'cmd_topic',
+            '/amr_command_2d'
         )
 
     if rospy.has_param('capacity'):

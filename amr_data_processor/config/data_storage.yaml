@@ -1,7 +1,7 @@
-data_dir: '/tmp/amr_data' # Directory to write image data
-capacity: 100            # Number of images to store
+data_dir: '/media/tasuku/Samsung_T3/workspace/amr_data/race_track/images' # Directory to write image data
+capacity: 1000000     # Number of images to store
 
 # Topics to record and store.
 img_topic: '/webcam/image_raw/compressed'
-cmd_topic: '/mobile_base/commands/velocity/stamped'
+cmd_topic: '/amr_command_2d'
 
