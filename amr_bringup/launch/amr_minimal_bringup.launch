@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<launch>
+  <arg name="record_on" default="false" />
+
+  <include file="$(find video_stream_opencv)/launch/webcam.launch" />
+  <include file="$(find amr_controller)/launch/amr_controller.launch" />
+
+  <group if="$(arg record_on)">
+    <include file="$(find amr_bag_recorder)/launch/amr_bag_recorder.launch" />
+    <include file="$(find amr_data_processor)/launch/amr_data_storage.launch" />
+  </group>
+</launch>
