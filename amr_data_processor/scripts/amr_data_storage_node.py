@@ -5,6 +5,7 @@
 import os
 import cv2
 import numpy as np
+import pickle
 
 # ROS related
 import rospy
@@ -19,14 +20,15 @@ class DataWriter(object):
     Class to specify topics to save and write to disk.
     """
 
-    def __init__(self, data_dir, img_topic, cmd_topic, capacity):
+    def __init__(self, data_dir, img_topic, cmd_topic, save_frequency, capacity):
         self._data_dir = data_dir               # dir to save images
         self._img_topic = img_topic             # image topic
         self._cmd_topic = cmd_topic             # velocity commands
         self._capacity = capacity               # capacity threshold
 
         # Store data buffer information.
-        self._img_array = []
+        self._save_frequency = save_frequency
+        self._img_path_array = []
         self._cmd_array = []
 
         self._setup()
@@ -57,6 +59,19 @@ class DataWriter(object):
         self._sync.registerCallback(self._sync_sub_callback)
         rospy.loginfo("Synced subscribers initialized...")
 
+    def _save_data_info(self):
+        """ Call periodically to save as input (path) and label to be used for
+            training models.
+        """
+        data = {
+            "images": self._img_path_array,
+            "control_commands": self._cmd_array
+        }
+
+        with open(os.path.join(self._data_dir,"predictions.pickle"), 'w') as f:
+            pickle.dump(data, f)
+            print("Predictions pickled to {}...".format(self._data_dir))
+
     def _sync_sub_callback(self, img, cmd):
         """ Call back for synchronize image and command subscribers.
             arg: img - image message of type CompressedImage
@@ -67,10 +82,11 @@ class DataWriter(object):
             path = os.path.join(self._data_dir, '{}.png'.format(rospy.get_rostime()))
             cv2.imwrite(path, cv_img)
 
-            self._img_array.append(path)
+            self._img_path_array.append(path)
             self._cmd_array.append(cmd)
-
-        #TODO: dump img_array _cmd_array to csv
+            
+            if len(self._cmd_array) % self._save_frequency:
+                self._save_data_info()
 
 def main():
     rospy.init_node('amr_data_storage_node')
@@ -96,13 +112,21 @@ def main():
 
     if rospy.has_param('capacity'):
         capacity = rospy.get_param(
-            'capacity'
+            'capacity',
+            1000000
+        )
+
+    if rospy.has_param('save_frequency'):
+        capacity = rospy.get_param(
+            'save_frequency',
+            100
         )
 
     data_writer = DataWriter(
         data_dir,
         img_topic,
         cmd_topic,
+        save_frequency,
         capacity
     )
 
@@ -110,6 +134,7 @@ def main():
     rospy.loginfo("Data directory: {}".format(data_dir))
     rospy.loginfo("Storing image topic: {}".format(img_topic))
     rospy.loginfo("Storing command topic: {}".format(cmd_topic))
+    rospy.loginfo("Data pickle frequency: {}".format(save_frequency))
     rospy.loginfo("Store capacity: {}".format(capacity))
     rospy.spin()
 
