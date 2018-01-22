@@ -14,6 +14,7 @@ from sensor_msgs.msg import CompressedImage
 from geometry_msgs.msg import Twist, TwistStamped
 from amr_controller.msg import Command2D
 
+
 class DataWriter(object):
 
     """
@@ -64,29 +65,30 @@ class DataWriter(object):
             training models.
         """
         data = {
-            "images": self._img_path_array,
-            "control_commands": self._cmd_array
+            "images": np.array(self._img_path_array),
+            "control_commands": np.array(self._cmd_array)
         }
 
-        with open(os.path.join(self._data_dir,"predictions.pickle"), 'w') as f:
+        with open(os.path.join(self._data_dir, "predictions.pickle"), 'w') as f:
             pickle.dump(data, f)
-            print("Predictions pickled to {}...".format(self._data_dir))
+            rospy.loginfo("Predictions pickled to {}...".format(self._data_dir))
 
     def _sync_sub_callback(self, img, cmd):
         """ Call back for synchronize image and command subscribers.
             arg: img - image message of type CompressedImage
             arg: cmd - velocity message of type TwistStamped
         """
-        if len(self._img_array) < self._capacity:
+        if len(self._img_path_array) < self._capacity:
             cv_img = cv2.imdecode(np.fromstring(img.data, np.uint8), 1)
             path = os.path.join(self._data_dir, '{}.png'.format(rospy.get_rostime()))
             cv2.imwrite(path, cv_img)
 
             self._img_path_array.append(path)
-            self._cmd_array.append(cmd)
-            
-            if len(self._cmd_array) % self._save_frequency:
+            self._cmd_array.append([cmd.x, cmd.y])
+
+            if len(self._cmd_array) % self._save_frequency == 0:
                 self._save_data_info()
+
 
 def main():
     rospy.init_node('amr_data_storage_node')
@@ -117,7 +119,7 @@ def main():
         )
 
     if rospy.has_param('save_frequency'):
-        capacity = rospy.get_param(
+        save_frequency = rospy.get_param(
             'save_frequency',
             100
         )
