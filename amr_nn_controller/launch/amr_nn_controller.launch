@@ -1,0 +1,5 @@
+<?xml version="1.0"?>
+<launch>
+  <node name="amr_nn_controller_node" pkg="amr_nn_controller" type="amr_nn_controller_node.py" output="screen"/>
+</launch>
+
