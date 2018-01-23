@@ -5,7 +5,7 @@ import rospy
 
 import std_msgs.msg
 from amr_controller.msg import Command2D
-from amr_nn_controller.srv import *
+from amr_service_hub.srv import *
 
 
 class NNController(object):
