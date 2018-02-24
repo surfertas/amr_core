@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<launch>
+  <include file="$(find amr_bringup)/launch/amr_minimal_bringup.launch" >
+    <arg name="record_on" value="true" />
+  </include>
+  <include file="$(find amr_teleop)/launch/amr_teleop_ps3.launch">
+    <arg name="joy_dev" value="/dev/input/js0" />
+  </include>
+</launch>

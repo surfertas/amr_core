@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>amr_data_processor</name>
+  <version>0.0.0</version>
+  <description>The amr_data_processor package</description>
+  <maintainer email="tasuku@gmail.com">tasuku</maintainer>
+  <license>MIT</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <depend>geometry_msgs</depend>
+  <depend>message_filters</depend>
+  <depend>sensor_msgs</depend>
+  <depend>amr_controller</depend>
+
+  <export>
+  </export>
+</package>

@@ -1,0 +1,25 @@
+#  Channel and PWM settings for the throttle (x control axis) actuator.
+cmd_topic: '/amr_command_2d'
+
+throttle_actuator:
+  name: 'throttle'
+  verbose: false # Whether to print sent command to console.
+  debug_only: false # If true, does not send command to actuator.
+  channel:    0
+  max_pulse:  500
+  zero_pulse: 370
+  min_pulse:  220
+  min_pulse_scale: 0.25 # Applied to input commands \in [-1, 0).
+  max_pulse_scale: 0.4 # Applied to input commands \in [0, 1].
+
+# Channel and PWM settings for the steering (y control axis) actuator.
+steering_actuator:
+  name: 'steering'
+  verbose: false # Whether to print sent command to console.
+  debug_only: false # If true, does not send command to actuator.
+  channel:     1
+  max_pulse:  460 # left
+  zero_pulse: 360
+  min_pulse:  260 # right
+  min_pulse_scale: 1.0 # Applied to input commands \in [-1, 0).
+  max_pulse_scale: 1.0 # Applied to input commands \in [0, 1].
