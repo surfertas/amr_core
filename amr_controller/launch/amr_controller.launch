@@ -1,6 +1,0 @@
-<?xml version="1.0"?>
-<launch>
-  <rosparam command="load" file="$(find amr_controller)/config/controller_params.yaml"/>
-
-  <node name="amr_vehicle_controller_node" pkg="amr_controller" type="amr_vehicle_controller_node.py" output="screen"/>
-</launch>
