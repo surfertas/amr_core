@@ -1,0 +1,4 @@
+<?xml version="1.0"?>
+<launch>
+  <include file="$(find amr_object_detection)/launch/amr_object_detection.launch"/>
+</launch>
