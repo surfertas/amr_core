@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<launch>
+  <rosparam command="load" file="$(find amr_object_detection)/config/model/yolo2.yaml"/>
+  <node name="amr_object_detection_service" pkg="amr_object_detection" type="amr_object_detection_service.py" output="screen"/>
+  <node name="object_detection" pkg="amr_object_detection" type="object_detection_node" output="screen"/>
+</launch>
