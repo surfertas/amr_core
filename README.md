@@ -7,20 +7,30 @@ Note: Readme is incomplete will work to detail out requirements overtime.
 ```
 $ git clone https://github.com/surfertas/amr_core.git
 ```
-2. Install joy package (used for teleoperation)
+2. Install joy package (used for teleoperation) into `amr_worker`.
 ```
 $ sudo apt-get install ros-indigo-joy
 ```
-3. Install `video_stream_opencv` package. 
+3. Install `video_stream_opencv` package into `amr_worker`.
 ```
 $ git clone https://github.com/ros-drivers/video_stream_opencv.git
 ```
-4. Configure `data_storage.yaml` found [here](https://github.com/surfertas/amr_core/blob/master/amr_data_processor/config/data_storage.yaml)
+4. Configure `data_storage.yaml` found [here](https://github.com/surfertas/amr_core/tree/master/amr_worker/amr_data_processor/config)
 
-Launch files are found [here](https://github.com/surfertas/amr_core/tree/master/amr_bringup/launch).
+Launch files are found [here](https://github.com/surfertas/amr_core/tree/master/amr_worker/amr_bringup/launch).
 
-Example launch:
+The intended set up is that `amr_worker` is running on an edge machine, (e.g.
+Raspberry Pi) while `amr_master` should be running on a more powerful master
+resource (e.g. Jetson TX).
+
+On Raspi:
 ```
-$ roslaunch amr_teleop_bringup.launch
+$ roslaunch amr_bringup amr_teleop_bringup.launch
 ```
+
+On Jetson TX1:
+```
+$ roslaunch amr_object_detection amr_object_detection.launch
+```
+
 * Teleop assumes ps3 dualshock3 controller
