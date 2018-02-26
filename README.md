@@ -28,9 +28,10 @@ On Raspi:
 $ roslaunch amr_bringup amr_teleop_bringup.launch
 ```
 
-On Jetson TX1:
+On Jetson TX1 launch the service hub which launch all services associated with
+the master. (e.g. object detection)
 ```
-$ roslaunch amr_object_detection amr_object_detection.launch
+$ roslaunch amr_service_hub amr_service_hub.launch
 ```
 
 * Teleop assumes ps3 dualshock3 controller
