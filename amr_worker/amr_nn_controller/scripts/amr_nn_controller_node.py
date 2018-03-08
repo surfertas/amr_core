@@ -5,10 +5,10 @@ import rospy
 
 import std_msgs.msg
 from amr_controller.msg import Command2D
-from amr_service_hub.srv import *
+from srv import PredictCommand
 
 
-class NNController(object):
+class NNControllerClient(object):
 
     """
     Given an image input, a dl model infers commands.
@@ -28,11 +28,15 @@ class NNController(object):
             persistent=True
         )
 
+        # Initialize subscriber and publisher
         self._image_sub = rospy.Subscriber(self._img_topic, CompressedImage, self._sub_callback)
         self._cmd_pub = rospy.Publisher(self._cmd_topic, Command2D, queue_size=10)
 
     def _sub_callback(self, img_msg):
-        """ Handler for image subscriber. """
+        """ Handler for image subscriber.
+        Args:
+            img_msg - ROS image
+        """
         try:
             resp = self._serve_get_prediction(img_msg)
         except rospy.ServiceException as e:
@@ -44,5 +48,5 @@ if __name__ == '__main__':
     rospy.init_node('amr_nn_controller_node')
     img_topic = rospy.get_param('img_topic')
     cmd_topic = rospy.get_param('cmd_topic')
-    nn_controller = NNController(img_topic, cmd_topic)
+    nn_controller = NNControllerClient(img_topic, cmd_topic)
     rospy.spin()

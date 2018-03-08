@@ -8,13 +8,12 @@
 
   <buildtool_depend>catkin</buildtool_depend>
   <depend>amr_controller</depend>
-  <depend>amr_service_hub</depend>
   <depend>geometry_msgs</depend>
   <depend>roscpp</depend>
   <depend>rospy</depend>
   <depend>sensor_msgs</depend>
   <depend>std_msgs</depend>
-
+  <depend>message_generation</depend>
   <export>
   </export>
 </package>
