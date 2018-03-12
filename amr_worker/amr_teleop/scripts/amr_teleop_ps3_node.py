@@ -33,7 +33,8 @@ class JoyStick:
 
     def _joy_stick_cb(self, msg):
         """ Read control command from joystick message, send to controller.
-            arg: msg - joystick message (http://wiki.ros.org/joy)
+        Args:
+             msg - joystick message (http://wiki.ros.org/joy)
         """
         cmd_msg = Command2D()
         cmd_msg.header = msg.header
@@ -46,9 +47,6 @@ class JoyStick:
 
 if __name__ == '__main__':
     rospy.init_node('amr_teleop_ps3')
-
     joystick_params = rospy.get_param('joy_stick')
-
     joystick = JoyStick(joystick_params)
-
     rospy.spin()
