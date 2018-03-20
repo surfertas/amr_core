@@ -3,24 +3,13 @@
 
 import os
 import pickle
+import csv
 
 from skimage import io, transform
 import pandas as pd
-import torch
-import torch.nn as nn
-import torch.nn.functional as F
-from torch.autograd import Variable
 
 from torch.utils.data import Dataset, DataLoader
 from torchvision import transforms, utils
-
-# used for logging to TensorBoard
-from tensorboard_logger import configure, log_value
-
-from pilot_net import *
-
-import math
-import copy
 
 
 class AMRControllerDataset(Dataset):
@@ -42,9 +31,15 @@ class AMRControllerDataset(Dataset):
         return len(self._frames)
 
     def __getitem__(self, idx):
-        pass
+        img_path = self._frames['images'].iloc[idx]
+        img = io.imread(img_path)
+        if self._transform is not None:
+            img = self._transform(img)
+
+        return {
+            'image': img,
+            'commands': self._frames['control_commands'].iloc[idx]
+        }
 
     def _get_frames(self):
-        pickle_path = os.path.join(self._root_dir, self._csv_file))
-        # TODO: convert pickle file to csv
-        pass
+        return pd.read_csv(os.path.join(self._root_dir, self._csv_file))
