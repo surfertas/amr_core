@@ -38,14 +38,14 @@ class AMRControllerDataset(Dataset):
 
         return {
             'image': img,
-            'commands': self._frames[['steer','throttle']].iloc[idx].as_matrix()
+            'commands': self._frames[['steer', 'throttle']].iloc[idx].as_matrix()
         }
 
     def _get_frames(self):
         pickle_path = os.path.join(self._root_dir, self._pickle_file)
         with open(pickle_path, 'rb') as f:
             pdict = pickle.load(f)
-        
+
         img_df = pd.DataFrame(pdict['images'], columns=['images'])
         controls_df = pd.DataFrame(pdict['control_commands'], columns=['steer', 'throttle'])
         df = pd.concat([img_df, controls_df], axis=1)
