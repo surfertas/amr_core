@@ -5,6 +5,7 @@
 import os
 import cv2
 import numpy as np
+import pandas as pd
 import pickle
 
 # ROS related
@@ -67,7 +68,7 @@ class DataWriter(object):
         self._sync.registerCallback(self._sync_sub_callback)
         rospy.loginfo("Synced subscribers initialized...")
 
-    def _save_data_info(self):
+    def _save_data_info(self, pickle=False):
         """ Call periodically to save as input (path) and label to be used for
             training models.
         """
@@ -75,10 +76,14 @@ class DataWriter(object):
             "images": np.array(self._img_path_array),
             "control_commands": np.array(self._cmd_array)
         }
-
-        with open(os.path.join(self._data_dir, "predictions.pickle"), 'w') as f:
-            pickle.dump(data, f)
-            rospy.loginfo("Predictions pickled to {}...".format(self._data_dir))
+        if not pickle:
+            df = pd.DataFrame.from_dict(data)
+            df.to_csv(os.path.join(self._data_dir, "predictions.csv")
+        else:
+            with open(os.path.join(self._data_dir, "predictions.pickle"), 'w') as f:
+                pickle.dump(data, f)
+        
+        rospy.loginfo("Predictions saved to {}...".format(self._data_dir))
 
     def _sync_sub_callback(self, img, cmd):
         """ Call back for synchronize image and command subscribers.
