@@ -78,7 +78,7 @@ class DataWriter(object):
         }
         if not pickle:
             df = pd.DataFrame.from_dict(data)
-            df.to_csv(os.path.join(self._data_dir, "predictions.csv")
+            df.to_csv(os.path.join(self._data_dir, "predictions.csv"))
         else:
             with open(os.path.join(self._data_dir, "predictions.pickle"), 'w') as f:
                 pickle.dump(data, f)
