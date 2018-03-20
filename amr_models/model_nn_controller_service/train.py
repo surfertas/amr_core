@@ -4,6 +4,7 @@
 
 import os
 import pickle
+import argparse
 
 from skimage import io, transform
 import numpy as np
@@ -17,8 +18,8 @@ from torch.utils.data import Dataset, DataLoader, ConcatDataset
 from torchvision import transforms, utils
 
 from data_loader import *
-from data_transforms import *
-from models import ResNet18FT
+from transforms import *
+from model import ResNet18FT
 from utils import save_checkpoint, create_dir
 
 
@@ -130,10 +131,10 @@ def main(args):
     # Create data loader
     train_loader = DataLoader(train_data, batch_size=args.batch_size, shuffle=True, num_workers=4)
 
-    valid_data = AMRControllerDataset(valid_pickle_file, args.root_dir, pre_process)
-    print("Valid data size: {}".format(len(valid_data)))
-    valid_loader = DataLoader(valid_data, batch_size=args.valid_batch_size, shuffle=False, num_workers=4)
-    print("Data loaded...")
+    #valid_data = AMRControllerDataset(valid_pickle_file, args.root_dir, pre_process)
+    #print("Valid data size: {}".format(len(valid_data)))
+    #valid_loader = DataLoader(valid_data, batch_size=args.valid_batch_size, shuffle=False, num_workers=4)
+    #print("Data loaded...")
 
     # Initiate model.
     model = ResNet18FT().cuda()
@@ -151,7 +152,7 @@ def main(args):
     # Train and validate
     for epoch in range(args.epochs):
         train_one_epoch(epoch, model, loss_fn, optimizer, train_loader)
-        ave_valid_loss = validate(epoch, model, loss_fn, optimizer, valid_loader)
+        #ave_valid_loss = validate(epoch, model, loss_fn, optimizer, valid_loader)
 
         is_best = True  # Save checkpoint every epoch for now.
 
@@ -162,13 +163,13 @@ def main(args):
         }, is_best, os.path.join(ckpt_path, 'checkpoint.pth.tar'))
 
     # Test
-    test(model, loss_fn, optimizer, valid_loader)
+    #test(model, loss_fn, optimizer, valid_loader)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='NN Controller')
     parser.add_argument('--root-dir', type=str, default='.',
                         help='path to root')
-    parser.add_argument('--train-data', type=str, default='train_data.pickle',
+    parser.add_argument('--train-data', type=str, default='predictions.pickle',
                         help='filename containing train data')
     parser.add_argument('--valid-data', type=str, default='valid_data.pickle',
                         help='filename containing valid data')
