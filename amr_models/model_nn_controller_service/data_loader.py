@@ -31,7 +31,12 @@ class AMRControllerDataset(Dataset):
         return len(self._frames)
 
     def __getitem__(self, idx):
-        img_path = self._frames['images'].iloc[idx]
+        path = self._frames['images'].iloc[idx]
+        # Get image name
+        img_name = path.rsplit('/',1)[-1]
+        # Create path to image
+        img_path = os.path.join(self._root_dir, img_name)
+        # Get actual image    
         img = io.imread(img_path)
         if self._transform is not None:
             img = self._transform(img)
