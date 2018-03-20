@@ -3,6 +3,8 @@
 # an image taken from a monocular camera. (Assumes CUDA enabled)
 # python train.py --root-dir /home/ubuntu/ws/amr_core/amr_models/model_nn_controller_service/data
 # put images and pickle file in ./data
+# TODO: split train into train and valid
+# TODO: save model and reload model, test with ROS package
 
 import os
 import pickle
