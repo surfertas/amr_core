@@ -96,24 +96,25 @@ def test(model, loss_fn, optimizer, test_loader):
         print("Predictions pickled...")
 
 
-def main():
-    # Set random seed to 0
-    np.random.seed(0)
-    torch.manual_seed(0)
+def main(args):
+    args.cuda = not args.no_cuda and torch.cuda.is_available()
 
-    # Set bags and file paths.
-    root_dir = r'/home/ubuntu/ws/deep_learning/projects/self_driving_car/1-pilot_net/data'
-    ckpt_path = os.path.join(root_dir, 'output')  # checkpoint.pth.tar')
-    log_path = os.path.join(root_dir, 'log')
+    # Set random seed to 0
+    np.random.seed(args.seed)
+    torch.manual_seed(args.seed)
+
+    # Set file paths.
+    ckpt_path = os.path.join(args.root_dir, 'output')  # checkpoint.pth.tar')
+    log_path = os.path.join(args.root_dir, 'log')
 
     create_dir(ckpt_path)
     create_dir(log_path)
 
     # Configure tensorboard log dir
-    configure(os.path.join(root_dir, 'log'))
+    configure(os.path.join(args.root_dir, 'log'))
 
-    train_csv_file = r'train_interpolated.csv'
-    valid_csv_file = r'valid_interpolated.csv'
+    train_pickle_file = args.train_data
+    valid_pickle_file = args.valid_data
 
     # Get transforms
     transforms = imagenet_transforms()
@@ -121,17 +122,17 @@ def main():
     pre_process = transforms['eval_transforms']
 
     # Set Up data
-    train_data_aug = AMRControllerDataset(train_csv_file, root_dir, bags, time_step, train_transforms)
-    train_data_orig = AMRControllerDataset(train_csv_file, root_dir, bags, time_step, pre_process)
+    train_data_aug = AMRControllerDataset(train_pickle_file, args.root_dir, train_transforms)
+    train_data_orig = AMRControllerDataset(train_pickle_file, args.root_dir, pre_process)
     train_data = ConcatDataset([train_data_orig, train_data_aug])
     print("Train data size: {}".format(len(train_data)))
 
     # Create data loader
-    train_loader = DataLoader(train_data, batch_size=64, shuffle=True, num_workers=4)
+    train_loader = DataLoader(train_data, batch_size=args.batch_size, shuffle=True, num_workers=4)
 
-    valid_data = AMRControllerDataset(valid_csv_file, root_dir, bags, time_step, pre_process)
+    valid_data = AMRControllerDataset(valid_pickle_file, args.root_dir, pre_process)
     print("Valid data size: {}".format(len(valid_data)))
-    valid_loader = DataLoader(valid_data, batch_size=64, shuffle=False, num_workers=4)
+    valid_loader = DataLoader(valid_data, batch_size=args.valid_batch_size, shuffle=False, num_workers=4)
     print("Data loaded...")
 
     # Initiate model.
@@ -148,7 +149,7 @@ def main():
     print("Model setup...")
 
     # Train and validate
-    for epoch in range(5):
+    for epoch in range(args.epochs):
         train_one_epoch(epoch, model, loss_fn, optimizer, train_loader)
         ave_valid_loss = validate(epoch, model, loss_fn, optimizer, valid_loader)
 
@@ -164,4 +165,25 @@ def main():
     test(model, loss_fn, optimizer, valid_loader)
 
 if __name__ == "__main__":
-    main()
+    parser = argparse.ArgumentParser(description='NN Controller')
+    parser.add_argument('--root-dir', type=str, default='.',
+                        help='path to root')
+    parser.add_argument('--train-data', type=str, default='train_data.pickle',
+                        help='filename containing train data')
+    parser.add_argument('--valid-data', type=str, default='valid_data.pickle',
+                        help='filename containing valid data')
+    parser.add_argument('--batch-size', type=int, default=32, metavar='N',
+                        help='input batch size for training (default: 32)')
+    parser.add_argument('--valid-batch-size', type=int, default=32, metavar='N',
+                        help='input batch size for validation (default: 32)')
+    parser.add_argument('--epochs', type=int, default=10, metavar='N',
+                        help='number of epochs to train (default: 10)')
+    parser.add_argument('--no-cuda', action='store_true', default=False,
+                        help='disables CUDA training')
+    parser.add_argument('--seed', type=int, default=0, metavar='S',
+                        help='random seed (default: 0)')
+    parser.add_argument('--log-interval', type=int, default=10, metavar='N',
+                        help='how many batches to wait before logging training status')
+
+    args = parser.parse_args()
+    main(args)
