@@ -1,6 +1,8 @@
 # @author Tasuku Miura
 # @brief Training for controller to output steering and throttle commands given
 # an image taken from a monocular camera. (Assumes CUDA enabled)
+# python train.py --root-dir /home/ubuntu/ws/amr_core/amr_models/model_nn_controller_service/data
+# put images and pickle file in ./data
 
 import os
 import pickle
@@ -32,7 +34,7 @@ def train_one_epoch(epoch, model, loss_fn, optimizer, train_loader):
     print("Epoch {} starting.".format(epoch))
     epoch_loss = 0
     for batch in train_loader:
-        data, target = batch['image'].cuda(), batch['steer'].cuda()
+        data, target = batch['image'].cuda(), batch['commands'].cuda()
         data = Variable(data).type(torch.cuda.FloatTensor)
         target = Variable(target).type(torch.cuda.FloatTensor)
 
@@ -53,7 +55,7 @@ def validate(epoch, model, loss_fn, optimizer, valid_loader):
     model.eval()
     valid_loss = 0
     for batch in valid_loader:
-        data, target = batch['image'].cuda(), batch['steer'].cuda()
+        data, target = batch['image'].cuda(), batch['commands'].cuda()
         data = Variable(data, volatile=True).type(torch.cuda.FloatTensor)
         target = Variable(target).type(torch.cuda.FloatTensor)
         predict = model(data)
@@ -72,7 +74,7 @@ def test(model, loss_fn, optimizer, test_loader):
     predicts = []
     test_loss = 0
     for batch in test_loader:
-        data, target = batch['image'].cuda(), batch['steer'].cuda()
+        data, target = batch['image'].cuda(), batch['commands'].cuda()
         data = Variable(data, volatile=True).type(torch.cuda.FloatTensor)
         target = Variable(target).type(torch.cuda.FloatTensor)
         output = model(data)
