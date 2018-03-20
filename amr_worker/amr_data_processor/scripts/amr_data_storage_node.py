@@ -22,10 +22,17 @@ class DataWriter(object):
     """
 
     def __init__(self, data_dir, img_topic, cmd_topic, save_frequency, capacity):
-        self._data_dir = data_dir               # dir to save images
-        self._img_topic = img_topic             # image topic
-        self._cmd_topic = cmd_topic             # velocity commands
-        self._capacity = capacity               # capacity threshold
+        """ Initialize DataWriter object.
+        Args:
+            data_dir - dir to save images
+            img_topic - image topic
+            save_frequency - rate at which to save data to disk
+            capacity - capacity of data store
+        """
+        self._data_dir = data_dir
+        self._img_topic = img_topic
+        self._cmd_topic = cmd_topic
+        self._capacity = capacity
 
         # Store data buffer information.
         self._save_frequency = save_frequency
@@ -75,8 +82,9 @@ class DataWriter(object):
 
     def _sync_sub_callback(self, img, cmd):
         """ Call back for synchronize image and command subscribers.
-            arg: img - image message of type CompressedImage
-            arg: cmd - velocity message of type TwistStamped
+        Args:
+            img - image message of type CompressedImage
+            cmd - velocity message of type TwistStamped
         """
         if len(self._img_path_array) < self._capacity:
             cv_img = cv2.imdecode(np.fromstring(img.data, np.uint8), 1)
