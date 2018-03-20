@@ -21,8 +21,8 @@ class AMRControllerDataset(Dataset):
     image to steering and throttle commands.
     """
 
-    def __init__(self, csv_file, root_dir, transform=None):
-        self._csv_file = csv_file
+    def __init__(self, pickle_file, root_dir, transform=None):
+        self._pickle_file = pickle_file
         self._root_dir = root_dir
         self._transform = transform
         self._frames = self._get_frames()
@@ -38,8 +38,15 @@ class AMRControllerDataset(Dataset):
 
         return {
             'image': img,
-            'commands': self._frames['control_commands'].iloc[idx]
+            'commands': self._frames[['steer','throttle']].iloc[idx].as_matrix()
         }
 
     def _get_frames(self):
-        return pd.read_csv(os.path.join(self._root_dir, self._csv_file))
+        pickle_path = os.path.join(self._root_dir, self._pickle_file)
+        with open(pickle_path, 'rb') as f:
+            pdict = pickle.load(f)
+        
+        img_df = pd.DataFrame(pdict['images'], columns=['images'])
+        controls_df = pd.DataFrame(pdict['control_commands'], columns=['steer', 'throttle'])
+        df = pd.concat([img_df, controls_df], axis=1)
+        return df
