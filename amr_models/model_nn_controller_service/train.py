@@ -71,38 +71,6 @@ def validate(epoch, model, loss_fn, optimizer, valid_loader):
     return valid_loss
 
 
-def test(model, loss_fn, optimizer, test_loader):
-    model.eval()
-    images = []
-    targets = []
-    predicts = []
-    test_loss = 0
-    for batch in test_loader:
-        data, target = batch['image'].cuda(), batch['commands'].cuda()
-        data = Variable(data, volatile=True).type(torch.cuda.FloatTensor)
-        target = Variable(target).type(torch.cuda.FloatTensor)
-        output = model(data)
-        test_loss += loss_fn(output, target).data[0]  # sum up batch loss
-
-        # Store image path as raw image too large.
-        images.append(batch['image_path'])
-        targets.append(target.data.cpu().numpy())
-        predicts.append(output.data.cpu().numpy())
-
-    test_loss /= len(test_loader.dataset)
-    print('Test set: Average loss: {:.4f}\n'.format(test_loss))
-
-    data_dict = {
-        "image": np.array(images),
-        "steer_target": np.array(targets).astype('float'),
-        "steer_pred": np.array(predicts).astype('float')
-    }
-
-    with open("pyt_predictions_lstm.pickle", 'wb') as f:
-        pickle.dump(data_dict, f)
-        print("Predictions pickled...")
-
-
 def main(args):
     args.cuda = not args.no_cuda and torch.cuda.is_available()
 
@@ -130,13 +98,13 @@ def main(args):
     # Set Up data
     train_data_aug = AMRControllerDataset(
         train_pickle_file,
-                        args.root_dir,
-                        train_transforms
+        args.root_dir,
+        train_transforms
     )
     train_data_orig = AMRControllerDataset(
         train_pickle_file,
-                        args.root_dir,
-                        pre_process
+        args.root_dir,
+        pre_process
     )
     train_data = ConcatDataset([train_data_orig, train_data_aug])
     print("Train data size: {}".format(len(train_data)))
@@ -150,22 +118,16 @@ def main(args):
     # Create data loader
     train_loader = DataLoader(
         train_data,
-                    batch_size=args.batch_size,
-                    sampler=train_sampler,
-                    num_workers=4
+        batch_size=args.batch_size,
+        sampler=train_sampler,
+        num_workers=4
     )
-
     valid_loader = DataLoader(
         train_data,
-                    batch_size=args.batch_size,
-                    sampler=valid_sampler,
-                    num_workers=4
+        batch_size=args.batch_size,
+        sampler=valid_sampler,
+        num_workers=4
     )
-
-    # valid_data = AMRControllerDataset(valid_pickle_file, args.root_dir, pre_process)
-    # print("Valid data size: {}".format(len(valid_data)))
-    # valid_loader = DataLoader(valid_data, batch_size=args.valid_batch_size, shuffle=False, num_workers=4)
-    # print("Data loaded...")
 
     # Initiate model.
     model = ResNet18FT().cuda()
@@ -193,8 +155,6 @@ def main(args):
                 'optimizer': optimizer.state_dict()
             }, os.path.join(ckpt_path, 'checkpoint.pth.tar'))
 
-    # Test
-    # test(model, loss_fn, optimizer, valid_loader)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='NN Controller')
