@@ -129,12 +129,12 @@ def main(args):
 
     # Set Up data
     train_data_aug = AMRControllerDataset(
-                        train_pickle_file,
+        train_pickle_file,
                         args.root_dir,
                         train_transforms
     )
     train_data_orig = AMRControllerDataset(
-                        train_pickle_file,
+        train_pickle_file,
                         args.root_dir,
                         pre_process
     )
@@ -143,29 +143,29 @@ def main(args):
 
     # Create train and validation samplers
     indices = list(range(len(train_data)))
-    n_train = int((1-args.train_valid_split)*len(train_data))
+    n_train = int((1 - args.train_valid_split) * len(train_data))
     train_sampler = SubsetRandomSampler(indices[:n_train])
     valid_sampler = SubsetRandomSampler(indices[n_train:])
 
     # Create data loader
     train_loader = DataLoader(
-                    train_data,
-                    batch_size=args.batch_size, 
+        train_data,
+                    batch_size=args.batch_size,
                     sampler=train_sampler,
                     num_workers=4
     )
 
     valid_loader = DataLoader(
-                    train_data,
+        train_data,
                     batch_size=args.batch_size,
                     sampler=valid_sampler,
                     num_workers=4
     )
 
-    #valid_data = AMRControllerDataset(valid_pickle_file, args.root_dir, pre_process)
-    #print("Valid data size: {}".format(len(valid_data)))
-    #valid_loader = DataLoader(valid_data, batch_size=args.valid_batch_size, shuffle=False, num_workers=4)
-    #print("Data loaded...")
+    # valid_data = AMRControllerDataset(valid_pickle_file, args.root_dir, pre_process)
+    # print("Valid data size: {}".format(len(valid_data)))
+    # valid_loader = DataLoader(valid_data, batch_size=args.valid_batch_size, shuffle=False, num_workers=4)
+    # print("Data loaded...")
 
     # Initiate model.
     model = ResNet18FT().cuda()
@@ -194,7 +194,7 @@ def main(args):
             }, os.path.join(ckpt_path, 'checkpoint.pth.tar'))
 
     # Test
-    #test(model, loss_fn, optimizer, valid_loader)
+    # test(model, loss_fn, optimizer, valid_loader)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='NN Controller')
