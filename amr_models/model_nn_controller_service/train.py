@@ -19,6 +19,8 @@ import torch.nn.functional as F
 from torch.autograd import Variable
 
 from torch.utils.data import Dataset, DataLoader, ConcatDataset
+from torch.utils.data.sampler import SubsetRandomSampler
+
 from torchvision import transforms, utils
 
 from data_loader import *
@@ -119,7 +121,6 @@ def main(args):
     configure(os.path.join(args.root_dir, 'log'))
 
     train_pickle_file = args.train_data
-    valid_pickle_file = args.valid_data
 
     # Get transforms
     transforms = imagenet_transforms()
@@ -127,13 +128,39 @@ def main(args):
     pre_process = transforms['eval_transforms']
 
     # Set Up data
-    train_data_aug = AMRControllerDataset(train_pickle_file, args.root_dir, train_transforms)
-    train_data_orig = AMRControllerDataset(train_pickle_file, args.root_dir, pre_process)
+    train_data_aug = AMRControllerDataset(
+                        train_pickle_file,
+                        args.root_dir,
+                        train_transforms
+    )
+    train_data_orig = AMRControllerDataset(
+                        train_pickle_file,
+                        args.root_dir,
+                        pre_process
+    )
     train_data = ConcatDataset([train_data_orig, train_data_aug])
     print("Train data size: {}".format(len(train_data)))
 
+    # Create train and validation samplers
+    indices = list(range(len(train_data)))
+    n_train = int((1-args.train_valid_split)*len(train_data))
+    train_sampler = SubsetRandomSampler(indices[:n_train])
+    valid_sampler = SubsetRandomSampler(indices[n_train:])
+
     # Create data loader
-    train_loader = DataLoader(train_data, batch_size=args.batch_size, shuffle=True, num_workers=4)
+    train_loader = DataLoader(
+                    train_data,
+                    batch_size=args.batch_size, 
+                    sampler=train_sampler,
+                    num_workers=4
+    )
+
+    valid_loader = DataLoader(
+                    train_data,
+                    batch_size=args.batch_size,
+                    sampler=valid_sampler,
+                    num_workers=4
+    )
 
     #valid_data = AMRControllerDataset(valid_pickle_file, args.root_dir, pre_process)
     #print("Valid data size: {}".format(len(valid_data)))
@@ -154,17 +181,17 @@ def main(args):
     print("Model setup...")
 
     # Train and validate
+    best_valid_loss = float('inf')
     for epoch in range(args.epochs):
         train_one_epoch(epoch, model, loss_fn, optimizer, train_loader)
-        #ave_valid_loss = validate(epoch, model, loss_fn, optimizer, valid_loader)
+        ave_valid_loss = validate(epoch, model, loss_fn, optimizer, valid_loader)
 
-        is_best = True  # Save checkpoint every epoch for now.
-
-        save_checkpoint({
-            'epoch': epoch,
-            'state_dict': model.state_dict(),
-            'optimizer': optimizer.state_dict()
-        }, is_best, os.path.join(ckpt_path, 'checkpoint.pth.tar'))
+        if ave_valid_loss < best_valid_loss:
+            save_checkpoint({
+                'epoch': epoch,
+                'state_dict': model.state_dict(),
+                'optimizer': optimizer.state_dict()
+            }, os.path.join(ckpt_path, 'checkpoint.pth.tar'))
 
     # Test
     #test(model, loss_fn, optimizer, valid_loader)
@@ -175,8 +202,8 @@ if __name__ == "__main__":
                         help='path to root')
     parser.add_argument('--train-data', type=str, default='predictions.pickle',
                         help='filename containing train data')
-    parser.add_argument('--valid-data', type=str, default='valid_data.pickle',
-                        help='filename containing valid data')
+    parser.add_argument('--train-valid-split', type=float, default='0.2',
+                        help='x% valid split')
     parser.add_argument('--batch-size', type=int, default=32, metavar='N',
                         help='input batch size for training (default: 32)')
     parser.add_argument('--valid-batch-size', type=int, default=32, metavar='N',
