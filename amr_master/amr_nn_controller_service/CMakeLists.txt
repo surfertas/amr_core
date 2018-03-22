@@ -17,12 +17,12 @@ PATHS /usr/local
 NO_DEFAULT_PATH)
 
 
-add_message_files(
+add_message_files(DIRECTORY msg
    FILES
    Command2D.msg
 )
 
-add_service_files(
+add_service_files(DIRECTORY srv
    FILES
    PredictCommand.srv
 )
