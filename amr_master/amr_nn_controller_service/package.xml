@@ -6,7 +6,6 @@
   <maintainer email="tasuku@gmail.com">tasuku</maintainer>
   <license>MIT</license>
   <buildtool_depend>catkin</buildtool_depend>
-  <build_depend>rospy</build_depend>
   <depend>cv_bridge</depend>
   <depend>image_transport</depend>
   <depend>roscpp</depend>

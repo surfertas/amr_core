@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(amr_nn_controller_service)
+
 find_package(catkin REQUIRED COMPONENTS
   cv_bridge
   image_transport
@@ -33,9 +34,6 @@ generate_messages(
 )
 
 catkin_package(
-  INCLUDE_DIRS
-    include
-  LIBRARIES object_detection
   CATKIN_DEPENDS
     cv_bridge
     image_transport 
@@ -45,8 +43,3 @@ catkin_package(
     std_msgs
   DEPENDS OpenCV
 )
-
-include_directories(
-  ${catkin_INCLUDE_DIRS}
-)
-
