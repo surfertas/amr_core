@@ -1,0 +1,1 @@
+nn_controller_path: '$(find amr_nn_controller_service)/models/resnet18FT_'
