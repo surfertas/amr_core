@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
 <launch>
   <rosparam command="load" file="$(find amr_nn_controller_service)/config/models.yaml"/>
-  <node name="amr_nn_controller_service" pkg="amr_nn_controller_service" type="amr_nn_controller_service.py" output="screen"/>
+  <node name="nn_controller_service" pkg="amr_nn_controller_service" type="nn_controller_service.py" output="screen"/>
 </launch>
