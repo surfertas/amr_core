@@ -61,11 +61,12 @@ class NNController(object):
         except CvBridgeError as e:
             rospy.logerr(e)
 
+        print(cv_img.shape)
         # TODO: Call predict function using img as input
-        output = run_inference(self._m, img)
+        output = run_inference(self._m, cv_img)
 
         cmd_msg = Command2D()
-        cmd_msg.header =  None# TODO: create header http://docs.ros.org/api/std_msgs/html/msg/Header.html
+        cmd_msg.header =  None # TODO: create header http://docs.ros.org/api/std_msgs/html/msg/Header.html
         cmd_msg.lazy_publishing = True
         cmd_msg.x = output[0]  # throttle
         cmd_msg.y = output[1]  # steer
