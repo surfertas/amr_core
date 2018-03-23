@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<launch>
+  <include file="$(find amr_bringup)/launch/amr_minimal_bringup.launch" >
+    <!-- Set record to false as default for nn controller -->
+    <arg name="record_on" value="false" />
+  </include>
+  <include file="$(find amr_nn_controller)/launch/amr_nn_controller.launch"/>
+</launch>
