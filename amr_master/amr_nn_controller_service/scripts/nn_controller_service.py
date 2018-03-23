@@ -25,12 +25,13 @@ class NNController(object):
         self._init_nn_controller_service()
 
     def _init_model(self):
+        print("here")
         self._m = ResNet18FT()
-        self._m.load_state_dict(torch.load(self._model_path))
+        m_tmp = torch.load(self._model_path)
+        # Need 'state_dict' key to get saved model. 
+        self._m.load_state_dict(m_tmp['state_dict'])
         rospy.loginfo('Loading weights... Done!')
-        if self._use_cuda:
-            self._m.cuda()
-
+        self._m.cuda()
         rospy.loginfo('NNController model initialized...')
 
 
