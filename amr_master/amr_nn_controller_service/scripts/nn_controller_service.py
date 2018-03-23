@@ -7,6 +7,7 @@ from cv_bridge import CvBridge, CvBridgeError
 from amr_nn_controller_service.msg import Command2D
 from amr_nn_controller_service.srv import PredictCommand
 
+import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -52,10 +53,11 @@ class NNController(object):
             res - ROS response, commands
         """
         try:
-            img = self._bridge.imgmsg_to_cv2(
-                req.image,
-                desired_encoding="passthrough"
-            )
+            cv_img = cv2.imdecode(np.fromstring(req.image.data, np.uint8), 1)
+            #img = self._bridge.imgmsg_to_cv2(
+            #    req.image,
+            #    desired_encoding="passthrough"
+            #)
         except CvBridgeError as e:
             rospy.logerr(e)
 
