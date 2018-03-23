@@ -2,6 +2,7 @@
 # @author Tasuku Miura
 
 import rospy
+import std_msgs.msg
 import cv2
 from cv_bridge import CvBridge, CvBridgeError
 from amr_nn_controller_service.msg import Command2D
@@ -9,9 +10,6 @@ from amr_nn_controller_service.srv import PredictCommand
 
 import numpy as np
 import torch
-import torch.nn as nn
-import torch.nn.functional as F
-from torch.autograd import Variable
 
 from models import *
 from utils import run_inference
@@ -54,24 +52,19 @@ class NNController(object):
         """
         try:
             cv_img = cv2.imdecode(np.fromstring(req.image.data, np.uint8), 1)
-            #img = self._bridge.imgmsg_to_cv2(
-            #    req.image,
-            #    desired_encoding="passthrough"
-            #)
         except CvBridgeError as e:
             rospy.logerr(e)
 
-        print(cv_img.shape)
-        # TODO: Call predict function using img as input
         output = run_inference(self._m, cv_img)
 
         cmd_msg = Command2D()
-        cmd_msg.header =  None # TODO: create header http://docs.ros.org/api/std_msgs/html/msg/Header.html
+        cmd_msg.header =  std_msgs.msg.Header()
+        cmd_msg.header.stamp = rospy.Time.now()
         cmd_msg.lazy_publishing = True
         cmd_msg.x = output[0]  # throttle
         cmd_msg.y = output[1]  # steer
 
-        return PredictCommandResponse(cmd_msg)
+        return cmd_msg
 
 
 def main():
