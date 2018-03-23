@@ -132,10 +132,11 @@ def main(args):
     # Initiate model.
     model = ResNet18FT().cuda()
 
-    resume = False  # set to false for now.
+    resume = True  # set to false for now.
     if resume:
-        state_dict = torch.load(ckpt_path)
-        model.load_state_dict(state_dict)
+        print("Resuming from checkpoint")
+        ckpt = torch.load(os.path.join(ckpt_path, args.ckpt_file_name))
+        model.load_state_dict(ckpt['state_dict'])
 
     # Set up optimizer and define loss function.
     optimizer = torch.optim.Adam(model.parameters())
@@ -160,6 +161,8 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='NN Controller')
     parser.add_argument('--root-dir', type=str, default='.',
                         help='path to root')
+    parser.add_argument('--ckpt-file-name', type=str, default='checkpoint.pth.tar',
+                        help='name of checkpoint file')
     parser.add_argument('--train-data', type=str, default='predictions.pickle',
                         help='filename containing train data')
     parser.add_argument('--train-valid-split', type=float, default='0.2',
