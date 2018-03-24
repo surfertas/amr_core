@@ -132,7 +132,7 @@ def main(args):
     # Initiate model.
     model = ResNet18FT().cuda()
 
-    resume = True  # set to false for now.
+    resume = False  # set to false for now.
     if resume:
         print("Resuming from checkpoint")
         ckpt = torch.load(os.path.join(ckpt_path, args.ckpt_file_name))
@@ -150,6 +150,7 @@ def main(args):
         ave_valid_loss = validate(epoch, model, loss_fn, optimizer, valid_loader)
 
         if ave_valid_loss < best_valid_loss:
+            best_valid_loss = ave_valid_loss
             save_checkpoint({
                 'epoch': epoch,
                 'state_dict': model.state_dict(),
