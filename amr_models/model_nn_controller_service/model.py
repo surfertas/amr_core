@@ -21,3 +21,27 @@ class ResNet18FT(nn.Module):
     def forward(self, x):
         x = self.resnet18ft(x)
         return x
+
+
+class ResNet18FE(nn.Module):
+
+    """
+    Feature Extract ResNet18
+    """
+
+    def __init__(self):
+        super(ResNet18FE, self).__init__()
+        self.resnet18fe = models.resnet18(pretrained=True)
+        # Set grad to false to freeze.
+        for param in self.resnet18fe.parameters():
+            param.requires_grad = False
+
+        # Default sets requires_grad to false,
+        # so final fc can be optimized.
+        num_ftrs = self.resnet18fe.fc.in_features
+        self.resnet18fe.fc = nn.Linear(num_ftrs, 2)
+        self.resnet18fe.cuda()
+
+    def forward(self, x):
+        x = self.resnet18fe(x)
+        return x
