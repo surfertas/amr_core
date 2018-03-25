@@ -1,1 +1,2 @@
-nn_controller_path: '$(find amr_nn_controller_service)/models/resnet18FT_'
+nn_controller_path: '/home/ubuntu/catkin_ws/src/amr_core/amr_master/amr_nn_controller_service/models/checkpoint.pth.tar'
+

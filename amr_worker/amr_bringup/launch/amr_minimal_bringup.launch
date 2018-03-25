@@ -1,5 +1,6 @@
 <?xml version="1.0"?>
 <launch>
+  <rosparam command="load" file="$(find amr_bringup)/config/params.yaml"/>
   <arg name="record_on" default="false" />
 
   <include file="$(find video_stream_opencv)/launch/webcam.launch" />

@@ -4,8 +4,10 @@
 import rospy
 
 import std_msgs.msg
+from sensor_msgs.msg import CompressedImage
+
 from amr_controller.msg import Command2D
-from srv import PredictCommand
+from amr_nn_controller.srv import PredictCommand
 
 
 class NNControllerClient(object):
