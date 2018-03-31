@@ -7,6 +7,8 @@ Related Posts:
 
 Note: Readme is incomplete will work to detail out requirements overtime.
 
+
+### Training
 1. Clone amr_core repository. 
 ```
 $ git clone https://github.com/surfertas/amr_core.git
@@ -23,19 +25,41 @@ $ git clone https://github.com/ros-drivers/video_stream_opencv.git
 
 Launch files are found [here](https://github.com/surfertas/amr_core/tree/master/amr_worker/amr_bringup/launch).
 
-The intended set up is that `amr_worker` is running on an edge machine, (e.g.
-Raspberry Pi) while `amr_master` should be running on a more powerful master
-resource (e.g. Jetson TX).
-
 On Raspi:
 ```
 $ roslaunch amr_bringup amr_teleop_bringup.launch
 ```
-
-On Jetson TX1 launch the service hub which launch all services associated with
-the master. (e.g. object detection)
-```
-$ roslaunch amr_service_hub amr_service_hub.launch
-```
-
 * Teleop assumes ps3 dualshock3 controller
+
+At this point, your robot should be subscribing to topics related to images, and
+commands(throttle and steer). Confirm that such topics are being published
+by inputting `rostopic list` on command line.
+
+In the `data_storage.yaml` configuration file, you can set the frequency at
+which the system saves the features (image) and label (commands) to disk. Note
+that you need to specify where you want to store the data.
+
+Once data has been collected you can retrieve the pickle file, and use the
+training repo found in `amr_models` to train the appropriate model.
+
+### Using the trained model
+
+Once the model has been trained, place the saved model file in the models folder
+of the appropriate package in `amr_master`. (e.g. place the controller model in
+`/models` of `amr_nn_controller_service`. Make sure the path to the model file
+is updated in `./config`.
+
+On Jetson TX initiate the service by:
+```
+$ roslaunch amr_nn_controller_service.launch
+```
+
+On Raspi launch the neural network driven controller by:
+```
+$ roslaunch amr_bringup amr_nn_bringup.launch
+```
+
+The intended set up is that `amr_worker` is running on an edge machine, (e.g.
+Raspberry Pi) while `amr_master` should be running on a more powerful master
+resource (e.g. Jetson TX).
+

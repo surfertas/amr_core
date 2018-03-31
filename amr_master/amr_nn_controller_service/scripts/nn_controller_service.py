@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # @author Tasuku Miura
+# @license MIT
 
 import rospy
 import std_msgs.msg
@@ -25,7 +26,7 @@ class NNController(object):
 
     def _init_model(self):
         print("here")
-        self._m = ResNet18FT()
+        self._m = ResNet18FE()
         m_tmp = torch.load(self._model_path)
         # Need 'state_dict' key to get saved model. 
         self._m.load_state_dict(m_tmp['state_dict'])
