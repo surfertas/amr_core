@@ -3,7 +3,7 @@ ROS packages related to autonomous mobile robot (amr) powered by Raspberry Pi
 
 Related Posts:
 1. [Autonomous Mobile Robot #1: Data collection to a trained model](https://surfertas.github.io/amr/deeplearning/machinelearning/2018/03/31/amr-1.html)
-
+2. [Autonomous Mobile Robot #2: Inference as a ROS service](https://surfertas.github.io/amr/deeplearning/machinelearning/2018/04/01/amr-2.html)
 
 Note: Readme is incomplete will work to detail out requirements overtime.
 
