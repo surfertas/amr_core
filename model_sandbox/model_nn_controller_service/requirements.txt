@@ -1,0 +1,7 @@
+torch==0.3.0.post4
+pandas==0.21.0
+torchvision==0.2.0
+scikit_image==0.13.1
+numpy==1.11.0
+skimage==0.0
+tensorboard_logger==0.1.0
