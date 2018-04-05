@@ -1,7 +1,7 @@
 # @author Tasuku Miura
 # @brief Training for controller to output steering and throttle commands given
 # an image taken from a monocular camera. (Assumes CUDA enabled)
-# python train.py --root-dir /home/ubuntu/ws/amr_core/amr_models/model_nn_controller_service/data
+# python train.py --root-dir /home/ubuntu/ws/amr_core/model_sandbox/model_nn_controller_service/data
 # put images and pickle file in ./data
 # TODO: save model and reload model, test with ROS package
 # http://pytorch.org/docs/master/notes/serialization.html#recommend-saving-models
@@ -25,8 +25,8 @@ from torchvision import transforms, utils
 
 from data_loader import *
 from transforms import *
-from model import ResNet18FT
-from utils import save_checkpoint, create_dir
+import models
+import utils
 
 
 # used for logging to TensorBoard
@@ -63,6 +63,7 @@ def validate(epoch, model, loss_fn, optimizer, valid_loader):
         data = Variable(data, volatile=True).type(torch.cuda.FloatTensor)
         target = Variable(target).type(torch.cuda.FloatTensor)
         predict = model(data)
+        print("Predict: {} Target: {}".format(predict[0], target[0]))
         valid_loss += loss_fn(predict, target).data[0]  # sum up batch loss
 
     valid_loss /= len(valid_loader.dataset)
@@ -82,8 +83,8 @@ def main(args):
     ckpt_path = os.path.join(args.root_dir, 'output')  # checkpoint.pth.tar')
     log_path = os.path.join(args.root_dir, 'log')
 
-    create_dir(ckpt_path)
-    create_dir(log_path)
+    utils.create_dir(ckpt_path)
+    utils.create_dir(log_path)
 
     # Configure tensorboard log dir
     configure(os.path.join(args.root_dir, 'log'))
@@ -130,7 +131,7 @@ def main(args):
     )
 
     # Initiate model.
-    model = ResNet18FT().cuda()
+    model = models.ResNet18FE().cuda()
 
     resume = False  # set to false for now.
     if resume:
@@ -139,7 +140,10 @@ def main(args):
         model.load_state_dict(ckpt['state_dict'])
 
     # Set up optimizer and define loss function.
-    optimizer = torch.optim.Adam(model.parameters())
+    # If feature extraction mode, use model.fc.parameters(). Need to optimize
+    # parameters that are not frozen.
+    parameters = model.resnet18fe.fc.parameters()
+    optimizer = torch.optim.Adam(parameters)
     loss_fn = nn.MSELoss()
     print("Model setup...")
 
@@ -151,7 +155,7 @@ def main(args):
 
         if ave_valid_loss < best_valid_loss:
             best_valid_loss = ave_valid_loss
-            save_checkpoint({
+            utils.save_checkpoint({
                 'epoch': epoch,
                 'state_dict': model.state_dict(),
                 'optimizer': optimizer.state_dict()

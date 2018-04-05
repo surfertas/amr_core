@@ -6,6 +6,7 @@ import pickle
 import csv
 
 from skimage import io, transform
+import cv2
 import pandas as pd
 
 from torch.utils.data import Dataset, DataLoader

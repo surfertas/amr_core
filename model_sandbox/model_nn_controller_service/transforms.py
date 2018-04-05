@@ -1,5 +1,7 @@
 # @author Tasuku Miura
 # @brief Transforms used for data augmentation
+import os
+from skimage import io, transform
 
 import torch
 from torchvision import transforms, utils
