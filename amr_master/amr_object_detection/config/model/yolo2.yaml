@@ -1,5 +1,8 @@
-yolo2_cfg_path: '/home/ubuntu/catkin_ws/src/ros_object_detection/data/yolo.cfg'
-yolo2_weights_path: '/home/ubuntu/catkin_ws/src/ros_object_detection/data/yolo.weights'
-voc_names: '/home/ubuntu/catkin_ws/src/ros_object_detection/data/voc.names'
-coco_names: '/home/ubuntu/catkin_ws/src/ros_object_detection/data/coco.names'
+yolo2_cfg_path: '/home/ubuntu/catkin_ws/src/amr_core/amr_master/amr_object_detection/data/yolo.cfg'
+
+yolo2_weights_path: '/home/ubuntu/catkin_ws/src/amr_core/amr_master/amr_object_detection/data/yolo.weights'
+
+voc_names: '/home/ubuntu/catkin_ws/src/amr_core/amr_master/amr_object_detection/data/voc.names'
+
+coco_names: '/home/ubuntu/catkin_ws/src/amr_core/amr_master/amr_object_detection/data/coco.names'
 
