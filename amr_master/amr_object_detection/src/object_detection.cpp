@@ -28,7 +28,7 @@ void ObjectDetect::registerServiceClient()
 
 void ObjectDetect::registerPublisher()
 {
-  detected_objects_pub_ = it_.advertise("/object_detect/detected_objects", 0);
+  detected_objects_pub_ = it_.advertise("/webcam/image_raw/compressed/object_detect/detected_objects", 0);
   std::cout << "Publisher initialized.." << std::endl;
 }
 
