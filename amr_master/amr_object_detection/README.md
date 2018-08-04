@@ -7,8 +7,8 @@ images published to `/webcam/image_raw` from a different machine.
 The raw images were taken on using a Raspi Camera Module attached to a Raspberry
 Pi 3, running on Ubuntu Mate 16.04.1 and ROS Kinetic. 
 
-Inference was done on a Jetson TX1 running on Ubuntu 16.04.1, OpenCV 3.0.0 with
-Cuda 8.0 enabled, ROS Kinetic, and PyTorch 0.2.0.
+Inference was done on a Jetson TX1 running on Ubuntu 16.04.1, OpenCV 3.3.1 with
+Cuda 9.0 enabled, ROS Kinetic, and PyTorch 0.5.0.
 
 Inference is done using a pretrained model:
 ```
