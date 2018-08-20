@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<launch>
+  <rosparam command="load" file="$(find rtsp_streamer)/config/user.yaml"/>
+  <node name="ros_streamer" pkg="rtsp_streamer" type="rtsp_streamer_node" output="screen">
+    <param name="width" value="640" type="int"/>
+    <param name="height" value="480" type="int"/>
+  </node>
+</launch>
