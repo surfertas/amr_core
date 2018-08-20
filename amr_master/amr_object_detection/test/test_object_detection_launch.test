@@ -1,0 +1,4 @@
+<?xml version="1.0"?>
+<launch>
+  <test test-name="test_object_detect" pkg="object_detect" type="test_object_detect"/>
+</launch>
