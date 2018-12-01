@@ -31,7 +31,7 @@ On Raspi:
 $ roslaunch amr_bringup amr_teleop_bringup.launch
 ```
 * Teleop assumes PS3 dualshock3 controller
-* Bluetooth setup [instructions](http://wiki.ros.org/ps3joy/Tutorials/PairingJoystickAndBluetoothDongle) for PS3 controller.
+* Bluetooth setup [instructions](http://wiki.ros.org/ps3joy/Tutorials/PairingJoystickAndBluetoothDongle) for PS3 controller. This needs to be done once `amr_teleop_bringup.launch` is launched in order to control the robot wireless.
 
 At this point, your robot should be subscribing to topics related to images, and
 commands(throttle and steer). Confirm that such topics are being published
