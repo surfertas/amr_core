@@ -23,6 +23,7 @@ $ sudo apt-get install ros-indigo-joy
 $ git clone https://github.com/ros-drivers/video_stream_opencv.git
 ```
 4. Configure `data_storage.yaml` found [here](https://github.com/surfertas/amr_core/tree/master/amr_worker/amr_data_processor/config)
+The setup will require a external SSD connected to the raspi via the specified device driver.
 
 Launch files are found [here](https://github.com/surfertas/amr_core/tree/master/amr_worker/amr_bringup/launch).
 
@@ -30,7 +31,8 @@ On Raspi:
 ```
 $ roslaunch amr_bringup amr_teleop_bringup.launch
 ```
-* Teleop assumes ps3 dualshock3 controller
+* Teleop assumes PS3 dualshock3 controller
+* Bluetooth setup [instructions](http://wiki.ros.org/ps3joy/Tutorials/PairingJoystickAndBluetoothDongle) for PS3 controller. This needs to be done once `amr_teleop_bringup.launch` is launched in order to control the robot wireless.
 
 At this point, your robot should be subscribing to topics related to images, and
 commands(throttle and steer). Confirm that such topics are being published
