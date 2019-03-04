@@ -11,14 +11,17 @@ from amr_nn_controller_service.srv import PredictCommand
 
 import numpy as np
 import torch
+from torch.autograd import Variable
 
-from models import *
-from utils import run_inference
+from models import Net
+from net_transforms import net_transforms
+from utils import dotdict
 
 class NNController(object):
 
-    def __init__(self, model_path):
+    def __init__(self, model_path, params):
         self._model_path = model_path
+	self.params = params
         self._m = None
         self._bridge = CvBridge()
         self._init_model()
@@ -26,14 +29,13 @@ class NNController(object):
 
     def _init_model(self):
         print("here")
-        self._m = ResNet18FE()
+        self._m = Net(self.params)
         m_tmp = torch.load(self._model_path)
         # Need 'state_dict' key to get saved model. 
         self._m.load_state_dict(m_tmp['state_dict'])
         rospy.loginfo('Loading weights... Done!')
         self._m.cuda()
         rospy.loginfo('NNController model initialized...')
-
 
     def _init_nn_controller_service(self):
         """ Initialize nn controller service. """
@@ -56,7 +58,7 @@ class NNController(object):
         except CvBridgeError as e:
             rospy.logerr(e)
 
-        output = run_inference(self._m, cv_img)
+        output = self._run_inference(self._m, cv_img)
 
         cmd_msg = Command2D()
         cmd_msg.header =  std_msgs.msg.Header()
@@ -67,13 +69,43 @@ class NNController(object):
 
         return cmd_msg
 
+    def _run_inference(self, model, img, use_cuda=1):
+        """ Runs inference given a PyTorch model.
+        Args:
+            model - pytorch model
+            img - numpy darray
+            use_cuda - 1 is True, 0 is False
+        Returns:
+            throttle - throttle command
+            steer - steer command
+        """
+        model.eval()
+        trans = net_transforms()['eval_transforms']
+        img = trans(torch.from_numpy(img.transpose(2,0,1))).unsqueeze(0)
+        if use_cuda:
+            img = img.cuda()
+
+        img = torch.autograd.Variable(img)
+        # Cuda tensor to numpy doesnt support GPU, use .cpu() to move to host mem. 
+        throttle, steer = model(img).data.cpu().numpy()[0]
+        print(throttle, steer)
+        return throttle, steer
+
+
+
+
 
 def main():
     rospy.init_node('amr_nn_controller_service')
     if rospy.has_param('/nn_controller_path'):
         model_path = rospy.get_param('/nn_controller_path')
 
-    controller = NNController(model_path)
+    if rospy.has_param('/params'):
+        # convert dict to work with dot notation.
+	params = dotdict(rospy.get_param('/params'))
+
+    print(params.num_channels)
+    controller = NNController(model_path, params)
     rospy.spin()
 
 if __name__ == '__main__':

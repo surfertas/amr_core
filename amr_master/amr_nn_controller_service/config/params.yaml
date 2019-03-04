@@ -1,0 +1,4 @@
+# Params need to be the same as used for training
+params:
+    dropout_rate: 0.8
+    num_channels: 32
