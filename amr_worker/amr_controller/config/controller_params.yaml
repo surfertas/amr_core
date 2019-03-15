@@ -9,8 +9,8 @@ throttle_actuator:
   max_pulse:  500
   zero_pulse: 370
   min_pulse:  220
-  min_pulse_scale: 0.25 # Applied to input commands \in [-1, 0).
-  max_pulse_scale: 0.4 # Applied to input commands \in [0, 1].
+  min_pulse_scale: 1.0 # Applied to input commands \in [-1, 0).
+  max_pulse_scale: 1.0 # Applied to input commands \in [0, 1].
 
 # Channel and PWM settings for the steering (y control axis) actuator.
 steering_actuator:
