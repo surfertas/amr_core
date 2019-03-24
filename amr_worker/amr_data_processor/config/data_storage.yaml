@@ -5,4 +5,5 @@ capacity: 1000000   # number of images to store
 # Topics to record and store.
 img_topic: '/webcam/image_raw/compressed'
 cmd_topic: '/amr_command_2d'
+joy_topic: '/joy'
 

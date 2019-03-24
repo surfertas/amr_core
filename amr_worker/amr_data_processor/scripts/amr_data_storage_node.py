@@ -13,6 +13,7 @@ import rospy
 import message_filters
 from sensor_msgs.msg import CompressedImage
 from geometry_msgs.msg import Twist, TwistStamped
+from sensor_msgs.msg import Joy
 from amr_controller.msg import Command2D
 
 
@@ -22,7 +23,7 @@ class DataWriter(object):
     Class to specify topics to save and write to disk.
     """
 
-    def __init__(self, data_dir, img_topic, cmd_topic, save_frequency, capacity):
+    def __init__(self, data_dir, img_topic, cmd_topic, joy_topic, save_frequency, capacity):
         """ Initialize DataWriter object.
         Args:
             data_dir - dir to save images
@@ -33,6 +34,8 @@ class DataWriter(object):
         self._data_dir = data_dir
         self._img_topic = img_topic
         self._cmd_topic = cmd_topic
+        self._joy_topic = joy_topic
+
         self._capacity = capacity
 
         # Store data buffer information.
@@ -40,17 +43,21 @@ class DataWriter(object):
         self._img_path_array = []
         self._cmd_array = []
 
-        self._setup()
+        # If the data collection process is on or off.
+        self._process_on = False
+        self._setup_running = False
+
+        self._setup_data_dir()
         self._init_subscribers()
 
-    def _setup(self):
+    def _setup_data_dir(self):
         """ Setup process related to DataWriter object. """
         # Create the data directory if it doesn't exist
         # New directory is created for each initialization to keep
         # data organized.
-        self._data_dir = os.path.join(self._data_dir, str(rospy.get_rostime()))
-        if not os.path.isdir(self._data_dir):
-            os.makedirs(self._data_dir)
+        self._session_dir = os.path.join(self._data_dir, str(rospy.get_rostime()))
+        if not os.path.isdir(self._session_dir):
+            os.makedirs(self._session_dir)
 
     def _init_subscribers(self):
         """ Set up subscribers and sync. """
@@ -67,6 +74,9 @@ class DataWriter(object):
         )
         self._sync.registerCallback(self._sync_sub_callback)
         rospy.loginfo("Synced subscribers initialized...")
+        
+        # Setup joy stick subscriber
+        self.joy_sub = rospy.Subscriber(self._joy_topic, Joy, self._controller_callback)
 
     def _save_data_info(self):
         """ Call periodically to save as input (path) and label to be used for
@@ -76,10 +86,10 @@ class DataWriter(object):
             "images": np.array(self._img_path_array),
             "control_commands": np.array(self._cmd_array)
         }
-        with open(os.path.join(self._data_dir, "predictions.pickle"), 'w') as f:
+        with open(os.path.join(self._session_dir, "predictions.pickle"), 'w') as f:
             pickle.dump(data, f)
     
-        rospy.loginfo("Predictions saved to {}...".format(self._data_dir))
+        rospy.loginfo("Predictions saved to {}...".format(self._session_dir))
 
     def _sync_sub_callback(self, img, cmd):
         """ Call back for synchronize image and command subscribers.
@@ -87,9 +97,9 @@ class DataWriter(object):
             img - image message of type CompressedImage
             cmd - velocity message of type TwistStamped
         """
-        if len(self._img_path_array) < self._capacity:
+        if len(self._img_path_array) < self._capacity and self._process_on:
             cv_img = cv2.imdecode(np.fromstring(img.data, np.uint8), 1)
-            path = os.path.join(self._data_dir, '{}.png'.format(rospy.get_rostime()))
+            path = os.path.join(self._session_dir, '{}.png'.format(rospy.get_rostime()))
             cv2.imwrite(path, cv_img)
 
             self._img_path_array.append(path)
@@ -97,6 +107,41 @@ class DataWriter(object):
 
             if len(self._cmd_array) % self._save_frequency == 0:
                 self._save_data_info()
+
+    def _controller_callback(self, joy_msg):
+        # http://docs.ros.org/melodic/api/sensor_msgs/html/msg/Joy.html
+        # http://wiki.ros.org/ps3joy
+        # https://answers.ros.org/question/260212/start-launchfile-from-service/
+            
+        if joy_msg.buttons[9] == 1 and self._setup_running == False:
+            if self._process_on:
+                rospy.loginfo(
+                    "Stop the current data collection process first before initializing new a process")
+            else:
+                self._setup_running = True
+                self._setup_data_dir()
+
+                # Reinitialize arrays
+                self._img_path_array = []
+                self._cmd_array = []
+                rospy.loginfo("Reinitialized the data arrays.")
+                self._process_on = True
+                self._setup_running = False
+                rospy.loginfo(
+                    "Starting new data collection process at {}".format(self._session_dir))
+            
+        if joy_msg.buttons[11] == 1 and self._process_on == False:
+            self._process_on = True
+            rospy.loginfo(
+                "Starting data collection and storage at {}".format(self._session_dir))
+
+        if joy_msg.buttons[10] == 1 and self._process_on == True:
+            self._process_on = False
+
+            # Pickle with latest samples
+            self._save_data_info()
+            rospy.loginfo(
+                "Stopping data collection and storage.")
 
 
 def main():
@@ -121,6 +166,12 @@ def main():
             '/amr_command_2d'
         )
 
+    if rospy.has_param('joy_topic'):
+        joy_topic = rospy.get_param(
+            'joy_topic',
+            '/joy'
+        )
+
     if rospy.has_param('capacity'):
         capacity = rospy.get_param(
             'capacity',
@@ -137,6 +188,7 @@ def main():
         data_dir,
         img_topic,
         cmd_topic,
+        joy_topic,
         save_frequency,
         capacity
     )
