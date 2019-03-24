@@ -14,14 +14,17 @@ import torch
 from torch.autograd import Variable
 
 from models import Net
+from models import AlexNetTransferFE
 from net_transforms import net_transforms
+from transforms import imagenet_transforms
 from utils import dotdict
+
 
 class NNController(object):
 
     def __init__(self, model_path, params):
         self._model_path = model_path
-	self.params = params
+        self.params = params
         self._m = None
         self._bridge = CvBridge()
         self._init_model()
@@ -29,9 +32,9 @@ class NNController(object):
 
     def _init_model(self):
         print("here")
-        self._m = Net(self.params)
+        self._m = AlexNetTransferFE(self.params)
         m_tmp = torch.load(self._model_path)
-        # Need 'state_dict' key to get saved model. 
+        # Need 'state_dict' key to get saved model.
         self._m.load_state_dict(m_tmp['state_dict'])
         rospy.loginfo('Loading weights... Done!')
         self._m.cuda()
@@ -61,7 +64,7 @@ class NNController(object):
         output = self._run_inference(self._m, cv_img)
 
         cmd_msg = Command2D()
-        cmd_msg.header =  std_msgs.msg.Header()
+        cmd_msg.header = std_msgs.msg.Header()
         cmd_msg.header.stamp = rospy.Time.now()
         cmd_msg.lazy_publishing = True
         cmd_msg.x = output[0]  # throttle
@@ -80,19 +83,16 @@ class NNController(object):
             steer - steer command
         """
         model.eval()
-        trans = net_transforms()['eval_transforms']
-        img = trans(torch.from_numpy(img.transpose(2,0,1))).unsqueeze(0)
+        trans = imagenet_transforms()['eval_transforms']
+        img = trans(torch.from_numpy(img.transpose(2, 0, 1))).unsqueeze(0)
         if use_cuda:
             img = img.cuda()
 
         img = torch.autograd.Variable(img)
-        # Cuda tensor to numpy doesnt support GPU, use .cpu() to move to host mem. 
+        # Cuda tensor to numpy doesnt support GPU, use .cpu() to move to host mem.
         throttle, steer = model(img).data.cpu().numpy()[0]
         print(throttle, steer)
         return throttle, steer
-
-
-
 
 
 def main():
@@ -102,11 +102,12 @@ def main():
 
     if rospy.has_param('/params'):
         # convert dict to work with dot notation.
-	params = dotdict(rospy.get_param('/params'))
+        params = dotdict(rospy.get_param('/params'))
 
     print(params.num_channels)
     controller = NNController(model_path, params)
     rospy.spin()
+
 
 if __name__ == '__main__':
     main()

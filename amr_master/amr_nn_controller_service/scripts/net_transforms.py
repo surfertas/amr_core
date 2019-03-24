@@ -8,7 +8,7 @@ from torchvision import transforms, utils
 def net_transforms():
     eval_transforms = transforms.Compose([
         transforms.ToPILImage(),
-        transforms.Resize((124,124)),
+        transforms.Resize((124, 124)),
         transforms.ToTensor()])  # transform it into a
 
     return {
