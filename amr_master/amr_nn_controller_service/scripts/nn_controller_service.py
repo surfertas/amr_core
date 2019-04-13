@@ -81,7 +81,6 @@ class NNController(object):
             throttle - throttle command
             steer - steer command
         """
-        model.eval()
         trans = basenet_transforms()['eval_transforms']
         img = trans(torch.from_numpy(img.transpose(2, 0, 1))).unsqueeze(0)
         if use_cuda:
