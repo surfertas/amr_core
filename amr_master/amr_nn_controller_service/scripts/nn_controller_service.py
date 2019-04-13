@@ -4,8 +4,11 @@
 
 import rospy
 import std_msgs.msg
+from sensor_msgs.msg import Joy
+
 import cv2
 from cv_bridge import CvBridge, CvBridgeError
+
 from amr_nn_controller_service.msg import Command2D
 from amr_nn_controller_service.srv import PredictCommand
 
@@ -28,6 +31,9 @@ class NNController(object):
         self._init_model()
         self._init_nn_controller_service()
 
+
+	self.joy_sub = rospy.Subscriber('/joy', Joy, self._joy_stick_cb)
+
     def _init_model(self):
         print("here")
         self._m = PilotNet(self._model_path)
@@ -48,6 +54,15 @@ class NNController(object):
         )
         rospy.loginfo("NN controller service initialized")
 
+
+    def _joy_stick_cb(self, msg):
+        """ Read control command from joystick message..
+        Args:
+             msg - joystick message (http://wiki.ros.org/joy)
+        """
+	# Make sure throttle axis set correctly, and consistent with joy configuration.
+        self.throttle = msg.axes[3]
+        
     def _nn_controller_handler(self, req):
         """ Handler for nn controller service.
         Args:
@@ -60,14 +75,14 @@ class NNController(object):
         except CvBridgeError as e:
             rospy.logerr(e)
 
-        output = self._run_inference(self._m, cv_img)
+        steer = self._run_inference(self._m, cv_img)
 
         cmd_msg = Command2D()
         cmd_msg.header = std_msgs.msg.Header()
         cmd_msg.header.stamp = rospy.Time.now()
         cmd_msg.lazy_publishing = True
-        cmd_msg.x = output[0]  # throttle
-        cmd_msg.y = output[1]  # steer
+        cmd_msg.x = self.throttle
+        cmd_msg.y = steer
 
         return cmd_msg
 
@@ -81,17 +96,20 @@ class NNController(object):
             throttle - throttle command
             steer - steer command
         """
-        trans = basenet_transforms()['eval_transforms']
-        img = trans(torch.from_numpy(img.transpose(2, 0, 1))).unsqueeze(0)
-        if use_cuda:
-            img = img.cuda()
+        #trans = basenet_transforms(self.cfg)['eval_transforms']
+        #img = trans(torch.from_numpy(img.transpose(2, 0, 1))).unsqueeze(0)
+        #if use_cuda:
+        #    img = img.cuda()
 
-        img = torch.autograd.Variable(img)
+        #img = torch.autograd.Variable(img)
         # Cuda tensor to numpy doesnt support GPU, use .cpu() to move to host mem.
-        steer = model(img).data.cpu().numpy()[0]
+        #steer = model.forward(img).data.cpu().numpy()[0]
+	steer = model.forward(img)
         print(steer)
-	throttle = 0.3
-        return throttle, steer
+	
+	#throttle = 0.3 + np.random.normal(0,0.01)
+	#print(throttle, steer)
+        return steer
 
 
 def main():
