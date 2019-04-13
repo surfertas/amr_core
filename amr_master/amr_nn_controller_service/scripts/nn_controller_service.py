@@ -15,8 +15,7 @@ from torch.autograd import Variable
 
 from models import Net
 from models import AlexNetTransferFE
-from net_transforms import net_transforms
-from transforms import imagenet_transforms
+from net_transforms import basenet_transforms
 from utils import dotdict
 
 
@@ -32,12 +31,13 @@ class NNController(object):
 
     def _init_model(self):
         print("here")
-        self._m = AlexNetTransferFE(self.params)
-        m_tmp = torch.load(self._model_path)
+        self._m = PilotNet(self._model_path)
+
+        #m_tmp = torch.load(self._model_path)
         # Need 'state_dict' key to get saved model.
-        self._m.load_state_dict(m_tmp['state_dict'])
-        rospy.loginfo('Loading weights... Done!')
-        self._m.cuda()
+#        self._m.load_state_dict(m_tmp['state_dict'])
+#        rospy.loginfo('Loading weights... Done!')
+#        self._m.cuda()
         rospy.loginfo('NNController model initialized...')
 
     def _init_nn_controller_service(self):
@@ -83,7 +83,7 @@ class NNController(object):
             steer - steer command
         """
         model.eval()
-        trans = imagenet_transforms()['eval_transforms']
+        trans = basenet_transforms()['eval_transforms']
         img = trans(torch.from_numpy(img.transpose(2, 0, 1))).unsqueeze(0)
         if use_cuda:
             img = img.cuda()

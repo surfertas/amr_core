@@ -5,12 +5,20 @@ import torch
 from torchvision import transforms, utils
 
 
-def net_transforms():
-    eval_transforms = transforms.Compose([
-        transforms.ToPILImage(),
-        transforms.Resize((124, 124)),
-        transforms.ToTensor()])  # transform it into a
+def basenet_transforms(cfg):
+    train_transformer = transforms.Compose([
+        transforms.Resize((cfg.IMAGE.TARGET_HEIGHT,cfg.IMAGE.TARGET_WIDTH)),
+        transforms.ToTensor()])  # transform it into a torch tensor
+
+    # loader for evaluation, keep separate as transformer for train can be
+    # different
+    eval_transformer = transforms.Compose([
+        transforms.Resize((cfg.IMAGE.TARGET_HEIGHT,cfg.IMAGE.TARGET_WIDTH)),
+        transforms.ToTensor()])  # transform it into a torch tensor
 
     return {
-        'eval_transforms': eval_transforms
+        'train_transformer': train_transformer,
+        'eval_transformer': eval_transformer,
     }
+
+
