@@ -19,7 +19,8 @@ class PilotNet(object):
         self.device = torch.device(self.cfg.MODEL.DEVICE)
         self.model.to(self.device)
         self.model.train(False)
-        self.model.load_state_dict(torch.load(model_path))
+	self.state_dict = torch.load(model_path)
+        self.model.load_state_dict(torch.load(model_path)['state_dict'])
 
     def forward(self, image):
         # NOTE: check if rgb or bgr

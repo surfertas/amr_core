@@ -89,8 +89,9 @@ class NNController(object):
 
         img = torch.autograd.Variable(img)
         # Cuda tensor to numpy doesnt support GPU, use .cpu() to move to host mem.
-        throttle, steer = model(img).data.cpu().numpy()[0]
-        print(throttle, steer)
+        steer = model(img).data.cpu().numpy()[0]
+        print(steer)
+	throttle = 0.3
         return throttle, steer
 
 
