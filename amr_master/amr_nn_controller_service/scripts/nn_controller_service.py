@@ -35,14 +35,7 @@ class NNController(object):
 	self.joy_sub = rospy.Subscriber('/joy', Joy, self._joy_stick_cb)
 
     def _init_model(self):
-        print("here")
         self._m = PilotNet(self._model_path)
-
-        #m_tmp = torch.load(self._model_path)
-        # Need 'state_dict' key to get saved model.
-#        self._m.load_state_dict(m_tmp['state_dict'])
-#        rospy.loginfo('Loading weights... Done!')
-#        self._m.cuda()
         rospy.loginfo('NNController model initialized...')
 
     def _init_nn_controller_service(self):
@@ -96,19 +89,8 @@ class NNController(object):
             throttle - throttle command
             steer - steer command
         """
-        #trans = basenet_transforms(self.cfg)['eval_transforms']
-        #img = trans(torch.from_numpy(img.transpose(2, 0, 1))).unsqueeze(0)
-        #if use_cuda:
-        #    img = img.cuda()
-
-        #img = torch.autograd.Variable(img)
-        # Cuda tensor to numpy doesnt support GPU, use .cpu() to move to host mem.
-        #steer = model.forward(img).data.cpu().numpy()[0]
 	steer = model.forward(img)
-        print(steer)
-	
-	#throttle = 0.3 + np.random.normal(0,0.01)
-	#print(throttle, steer)
+	rospy.loginfo(steer)
         return steer
 
 
