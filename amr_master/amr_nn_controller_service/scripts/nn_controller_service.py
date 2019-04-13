@@ -13,8 +13,7 @@ import numpy as np
 import torch
 from torch.autograd import Variable
 
-from models import Net
-from models import AlexNetTransferFE
+from models import PilotNet
 from net_transforms import basenet_transforms
 from utils import dotdict
 
