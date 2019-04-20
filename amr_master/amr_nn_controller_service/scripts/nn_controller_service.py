@@ -12,6 +12,7 @@ from cv_bridge import CvBridge, CvBridgeError
 from amr_nn_controller_service.msg import Command2D
 from amr_nn_controller_service.srv import PredictCommand
 
+import os
 import numpy as np
 import torch
 from torch.autograd import Variable
@@ -30,8 +31,8 @@ class NNController(object):
         self._bridge = CvBridge()
         self._init_model()
         self._init_nn_controller_service()
-
-
+	
+	self.throttle = 0.0
 	self.joy_sub = rospy.Subscriber('/joy', Joy, self._joy_stick_cb)
 
     def _init_model(self):
@@ -64,7 +65,12 @@ class NNController(object):
             res - ROS response, commands
         """
         try:
+	    # image is RGB - confirmed 4.20.2019
             cv_img = cv2.imdecode(np.fromstring(req.image.data, np.uint8), 1)
+            #path = os.path.abspath(os.path.dirname(__file__))		
+	    #cv2.imwrite(os.path.join(path, "before.png"), cv_img)
+	    #cv_img = cv2.cvtColor(cv_img, code=cv2.COLOR_BGR2RGB)
+	    #cv2.imwrite(os.path.join(path, "after.png"), cv_img)
         except CvBridgeError as e:
             rospy.logerr(e)
 
@@ -76,6 +82,7 @@ class NNController(object):
         cmd_msg.lazy_publishing = True
         cmd_msg.x = self.throttle
         cmd_msg.y = steer
+	print(self.throttle, steer)
 
         return cmd_msg
 
@@ -90,7 +97,6 @@ class NNController(object):
             steer - steer command
         """
 	steer = model.forward(img)
-	rospy.loginfo(steer)
         return steer
 
 
