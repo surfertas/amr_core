@@ -67,10 +67,6 @@ class NNController(object):
         try:
 	    # image is RGB - confirmed 4.20.2019
             cv_img = cv2.imdecode(np.fromstring(req.image.data, np.uint8), 1)
-            #path = os.path.abspath(os.path.dirname(__file__))		
-	    #cv2.imwrite(os.path.join(path, "before.png"), cv_img)
-	    #cv_img = cv2.cvtColor(cv_img, code=cv2.COLOR_BGR2RGB)
-	    #cv2.imwrite(os.path.join(path, "after.png"), cv_img)
         except CvBridgeError as e:
             rospy.logerr(e)
 
@@ -86,14 +82,12 @@ class NNController(object):
 
         return cmd_msg
 
-    def _run_inference(self, model, img, use_cuda=1):
+    def _run_inference(self, model, img):
         """ Runs inference given a PyTorch model.
         Args:
             model - pytorch model
             img - numpy darray
-            use_cuda - 1 is True, 0 is False
         Returns:
-            throttle - throttle command
             steer - steer command
         """
 	steer = model.forward(img)
