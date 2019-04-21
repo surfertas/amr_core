@@ -5,4 +5,8 @@
     <arg name="record_on" value="false" />
   </include>
   <include file="$(find amr_nn_controller)/launch/amr_nn_controller.launch"/>
+  <include file="$(find amr_teleop)/launch/amr_teleop_ps3.launch">
+    <arg name="joy_dev" value="/dev/input/js0" />
+  </include>
+
 </launch>
