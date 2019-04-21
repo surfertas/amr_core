@@ -24,9 +24,8 @@ from utils import dotdict
 
 class NNController(object):
 
-    def __init__(self, model_path, params):
+    def __init__(self, model_path):
         self._model_path = model_path
-        self.params = params
         self._m = None
         self._bridge = CvBridge()
         self._init_model()
@@ -103,8 +102,7 @@ def main():
         # convert dict to work with dot notation.
         params = dotdict(rospy.get_param('/params'))
 
-    print(params.num_channels)
-    controller = NNController(model_path, params)
+    controller = NNController(model_path)
     rospy.spin()
 
 
