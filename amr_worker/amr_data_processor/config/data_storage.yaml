@@ -1,5 +1,5 @@
 data_dir: '/media/tasuku/Samsung_T3/workspace/amr_data/race_track/images' # directory to write image data
-save_frequency: 500 # pickle threshold (save data every 'save_frequency')
+save_frequency: 200 # pickle threshold (save data every 'save_frequency')
 capacity: 1000000   # number of images to store
 
 # Topics to record and store.
