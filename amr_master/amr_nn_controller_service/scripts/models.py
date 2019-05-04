@@ -25,17 +25,17 @@ class PilotNet(object):
         self.model.load_state_dict(torch.load(model_path)['state_dict'])
 
     def forward(self, image):
-        # NOTE: check if rgb or bgr
-        #image = cv2.cvtColor(image, code=cv2.COLOR_RGB2BGR)
+	image = self._preprocess(image)
         transform = basenet_transforms(self.cfg)['eval_transformer']
-	# Convert from numpy array to PIL image for transform.
-	# TODO: look into just using cv2
 	image = transform(Image.fromarray(image))
         image = image.unsqueeze(0)        
         image = image.to(self.device)
         prediction = self.model(image)
         return prediction.item()
 
-
+    def _preprocess(self, image):
+        # crop image (remove useless information)
+        cropped = image[range(*self.cfg.IMAGE.CROP_HEIGHT), :, :]
+        return cropped
 
 
