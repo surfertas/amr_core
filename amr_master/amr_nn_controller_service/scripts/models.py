@@ -12,7 +12,7 @@ from PIL import Image
 from model import build_model
 from config import get_cfg_defaults
 
-from net_transforms import basenet_transforms
+from net_transforms import pilotnet_transforms
 
 class PilotNet(object):
     def __init__(self, model_path):
@@ -21,13 +21,13 @@ class PilotNet(object):
         self.device = torch.device(self.cfg.MODEL.DEVICE)
         self.model.to(self.device)
         self.model.train(False)
-	self.state_dict = torch.load(model_path)
+	    self.state_dict = torch.load(model_path)
         self.model.load_state_dict(torch.load(model_path)['state_dict'])
 
     def forward(self, image):
-	image = self._preprocess(image)
-        transform = basenet_transforms(self.cfg)['eval_transformer']
-	image = transform(Image.fromarray(image))
+	    image = self._preprocess(image)
+        transform = pilotnet_transforms(self.cfg)['eval_transformer']
+	    image = transform(Image.fromarray(image))
         image = image.unsqueeze(0)        
         image = image.to(self.device)
         prediction = self.model(image)
@@ -37,5 +37,7 @@ class PilotNet(object):
         # crop image (remove useless information)
         cropped = image[range(*self.cfg.IMAGE.CROP_HEIGHT), :, :]
         return cropped
+
+
 
 
