@@ -1,4 +1,0 @@
-sensor_msgs/CompressedImage image
----
-amr_tf_controller_service/Command2D commands
-
