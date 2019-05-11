@@ -1,2 +1,0 @@
-model_path: '/home/ubuntu/catkin_ws/src/amr_core/amr_master/amr_tf_controller_service/models'
-model_name: 'saved_model.pb'
