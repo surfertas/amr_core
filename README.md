@@ -9,8 +9,8 @@ Related Posts:
 
 Note: Readme is incomplete will work to detail out requirements overtime.
 
+## Setup 
 
-### Training
 1. Clone amr_core repository. 
 ```
 $ git clone https://github.com/surfertas/amr_core.git
@@ -27,6 +27,8 @@ $ git clone https://github.com/ros-drivers/video_stream_opencv.git
 The setup will require a external SSD connected to the raspi via the specified device driver.
 
 Launch files are found [here](https://github.com/surfertas/amr_core/tree/master/amr_worker/amr_bringup/launch).
+
+### Training
 
 On Raspi:
 ```
@@ -67,3 +69,5 @@ The intended set up is that `amr_worker` is running on an edge machine, (e.g.
 Raspberry Pi) while `amr_master` should be running on a more powerful master
 resource (e.g. Jetson TX).
 
+## License
+[MIT](https://choosealicense.com/licenses/mit/)
